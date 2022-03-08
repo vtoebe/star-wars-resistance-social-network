@@ -17,7 +17,7 @@ public class InventoryEntity {
     @JoinColumn(name = "id")
     private PersonEntity person;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "items")
     private ItemsEntity items;
 

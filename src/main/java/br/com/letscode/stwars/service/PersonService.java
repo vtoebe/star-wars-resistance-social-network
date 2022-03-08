@@ -23,11 +23,6 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final LocaleService localeService;
 
-    public void testRepository(){
-        Optional<PersonEntity> personEntity = personRepository.findById(5L);
-        System.out.println("test repo");
-    }
-
     public void insertPerson(PersonRequestDto request) {
         PersonEntity person = personMapper.toEntity(request);
 

@@ -19,10 +19,7 @@ public class PersonController {
     private final LocaleService localeService;
 
     // GetByIdRebel
-    @GetMapping
-    public void getPerson(){
-        personService.testRepository();
-    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) // 201 -> Objeto criado com sucesso.

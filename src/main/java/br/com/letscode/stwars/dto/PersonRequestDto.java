@@ -15,8 +15,6 @@ public class PersonRequestDto {
 
     private String genre;
 
-    private String faction;
-
     //Locale
     private String latitude;
     private String longitude;
