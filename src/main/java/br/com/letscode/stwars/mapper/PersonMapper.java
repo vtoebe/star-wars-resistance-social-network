@@ -21,9 +21,9 @@ public interface PersonMapper {
     @Mapping(target = "locale.longitude", source = "request.longitude")
 //    @Mapping(target = "locale.base", source = "request.base")
 
-    @Mapping(target = "inventory.weapons", source = "request.weapons")
-    @Mapping(target = "inventory.ammunitions", source = "request.ammunitions")
-    @Mapping(target = "inventory.waters", source = "request.waters")
-    @Mapping(target = "inventory.foods", source = "request.foods")
+    @Mapping(target = "inventory.items.weapons", source = "request.weapons")
+    @Mapping(target = "inventory.items.ammunitions", source = "request.ammunitions")
+    @Mapping(target = "inventory.items.waters", source = "request.waters")
+    @Mapping(target = "inventory.items.foods", source = "request.foods")
     PersonEntity toEntity(PersonRequestDto request);
 }
