@@ -3,10 +3,10 @@ package br.com.letscode.stwars.mapper;
 import br.com.letscode.stwars.dto.PersonRequestDto;
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.enums.GenreEnum;
+import br.com.letscode.stwars.mapper.impl.MapperHelper;
 import br.com.letscode.stwars.model.PersonEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring", imports = {MapperHelper.class, GenreEnum.class, FactionEnum.class})
 public interface PersonMapper {

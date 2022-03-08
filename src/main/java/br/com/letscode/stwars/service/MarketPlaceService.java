@@ -12,7 +12,6 @@ import br.com.letscode.stwars.repository.ItemsRepository;
 import br.com.letscode.stwars.repository.MarketPlaceRepository;
 import br.com.letscode.stwars.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
