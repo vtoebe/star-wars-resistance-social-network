@@ -4,6 +4,7 @@ import br.com.letscode.stwars.dto.LocaleRequestDto;
 import br.com.letscode.stwars.dto.PersonRequestDto;
 import br.com.letscode.stwars.dto.PersonResponseDto;
 import br.com.letscode.stwars.dto.ReportRequestDto;
+import br.com.letscode.stwars.model.InventoryEntity;
 import br.com.letscode.stwars.model.PersonEntity;
 import br.com.letscode.stwars.service.LocaleService;
 import br.com.letscode.stwars.service.PersonService;
@@ -23,7 +24,9 @@ public class PersonController {
     // GetByIdRebel
     @GetMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void getPersonById(@PathVariable(value = "id") Long id){ personService.getPersonById(id);}
+    public InventoryEntity getPersonById(@PathVariable(value = "id") Long id){
+        return personService.getPersonInventory(id);
+    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

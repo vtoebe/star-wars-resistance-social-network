@@ -49,4 +49,9 @@ public class PersonService {
     public PersonEntity getPersonById(Long id) {
         return personRepository.findById(id).get();
     }
+
+    public InventoryEntity getPersonInventory(Long id){
+        return personRepository.findById(id).get().getInventory();
+    }
+
 }

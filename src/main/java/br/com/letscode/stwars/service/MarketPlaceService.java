@@ -70,7 +70,7 @@ public class MarketPlaceService {
         //todo caso não encontre
         BaseEntity base = baseRepository.findById(request.getBase()).get();
 
-        if(base != null){
+        if(base == null){
             throw new BusinessValidationException("This base does not exists");
         } else marketPlaceEntity.setBase(base);
 
@@ -80,10 +80,13 @@ public class MarketPlaceService {
         itemsRepository.save(offer);
 
         //todo remover os itens do inventario !
+        System.out.println(personAmmunitions + "PERSON AMMUNITIONS");
+        System.out.println(offer.getAmmunitions() + "OFFER AMMUNITIONS");
+        System.out.println(personAmmunitions - offer.getAmmunitions());
         person.get().getInventory().getItems().setAmmunitions(personAmmunitions - offer.getAmmunitions());
-        person.get().getInventory().getItems().setAmmunitions(personWaters - offer.getWaters());
-        person.get().getInventory().getItems().setAmmunitions(personFoods - offer.getFoods());
-        person.get().getInventory().getItems().setAmmunitions(personWeapons - offer.getWeapons());
+        person.get().getInventory().getItems().setWaters(personWaters - offer.getWaters());
+        person.get().getInventory().getItems().setFoods(personFoods - offer.getFoods());
+        person.get().getInventory().getItems().setWeapons(personWeapons - offer.getWeapons());
 
         marketPlaceEntity.setReceive(receive);
         marketPlaceEntity.setOffer(offer);
