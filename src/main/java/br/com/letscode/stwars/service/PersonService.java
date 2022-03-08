@@ -13,6 +13,7 @@ import br.com.letscode.stwars.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,5 +40,13 @@ public class PersonService {
 
         localeService.updateLocale(request, person);
         personRepository.save(person);
+    }
+
+    public List<PersonEntity> getListByPerson(){
+        return personRepository.findAll();
+    }
+
+    public PersonEntity getPersonById(Long id) {
+        return personRepository.findById(id).get();
     }
 }

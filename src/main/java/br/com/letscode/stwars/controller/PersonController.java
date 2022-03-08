@@ -4,11 +4,14 @@ import br.com.letscode.stwars.dto.LocaleRequestDto;
 import br.com.letscode.stwars.dto.PersonRequestDto;
 import br.com.letscode.stwars.dto.PersonResponseDto;
 import br.com.letscode.stwars.dto.ReportRequestDto;
+import br.com.letscode.stwars.model.PersonEntity;
 import br.com.letscode.stwars.service.LocaleService;
 import br.com.letscode.stwars.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,10 +19,15 @@ import org.springframework.web.bind.annotation.*;
 public class PersonController {
 
     private final PersonService personService;
-    private final LocaleService localeService;
 
     // GetByIdRebel
+    @GetMapping(value = "{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void getPersonById(@PathVariable(value = "id") Long id){ personService.getPersonById(id);}
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<PersonEntity> getListByPerson(){ return personService.getListByPerson(); }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) // 201 -> Objeto criado com sucesso.
