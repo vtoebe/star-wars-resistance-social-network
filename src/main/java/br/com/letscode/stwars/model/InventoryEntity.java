@@ -1,5 +1,6 @@
 package br.com.letscode.stwars.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 public class InventoryEntity {
 
     @Id private Long id;
+    @JsonIgnore
     @MapsId
     @OneToOne
     @JoinColumn(name = "id")

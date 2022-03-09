@@ -2,6 +2,7 @@ package br.com.letscode.stwars.model;
 
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.enums.GenreEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -25,10 +26,12 @@ public class PersonEntity {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @JsonIgnore
     @PrimaryKeyJoinColumn
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "person")
     private InventoryEntity inventory;
 
+    @JsonIgnore
     @PrimaryKeyJoinColumn
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "person")
     private LocaleEntity locale;

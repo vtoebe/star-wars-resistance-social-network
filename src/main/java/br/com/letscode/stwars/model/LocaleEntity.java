@@ -1,5 +1,6 @@
 package br.com.letscode.stwars.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,6 +14,7 @@ public class LocaleEntity {
     @Id
     private Long id;
     @MapsId
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "id")
     private PersonEntity person;
