@@ -24,7 +24,7 @@ public class PersonController {
     // GetByIdRebel
     @GetMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
-    public InventoryEntity getPersonById(@PathVariable(value = "id") Long id){
+    public InventoryEntity getPersonInventoryById(@PathVariable(value = "id") Long id){
         return personService.getPersonInventory(id);
     }
 

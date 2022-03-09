@@ -1,5 +1,6 @@
 package br.com.letscode.stwars.controller;
 
+import br.com.letscode.stwars.dto.AcceptOfferDto;
 import br.com.letscode.stwars.dto.MarketPlaceDto;
 import br.com.letscode.stwars.model.MarketPlaceEntity;
 import br.com.letscode.stwars.service.MarketPlaceService;
@@ -26,4 +27,8 @@ public class MarketPlaceController {
         return service.getListByMarketPlace();
     }
 
+    @PostMapping(value = "{id}")
+    public void acceptOffer(@PathVariable("id") Long id, @RequestBody AcceptOfferDto request){
+        service.acceptOffer(request, id);
+    }
 }
