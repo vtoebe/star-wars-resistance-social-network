@@ -19,11 +19,11 @@ public class MarketPlaceEntity {
     @JoinColumn(name = "offeredBy")
     private PersonEntity offeredBy ;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "offer")
     private ItemsEntity offer;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "receive")
     private ItemsEntity receive;
 
