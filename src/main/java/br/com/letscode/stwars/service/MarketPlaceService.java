@@ -1,15 +1,15 @@
 package br.com.letscode.stwars.service;
 
 import br.com.letscode.stwars.dto.MarketPlaceDto;
-import br.com.letscode.stwars.enums.FactionEnum;
-import br.com.letscode.stwars.enums.ItemsEnum;
-import br.com.letscode.stwars.exceptions.BusinessValidationException;
+import br.com.letscode.stwars.dto.PersonIdDto;
 import br.com.letscode.stwars.mapper.ItemMapper;
 import br.com.letscode.stwars.model.*;
 import br.com.letscode.stwars.repository.BaseRepository;
 import br.com.letscode.stwars.repository.ItemsRepository;
 import br.com.letscode.stwars.repository.MarketPlaceRepository;
 import br.com.letscode.stwars.repository.PersonRepository;
+import br.com.letscode.stwars.validators.OfferValidator;
+import br.com.letscode.stwars.validators.TradeValidators;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +22,12 @@ public class MarketPlaceService {
 
     private final ItemMapper mapper;
     private final BaseRepository baseRepository;
-    private final MarketPlaceRepository repository;
+    private final MarketPlaceRepository marketplaceRepository;
     private final PersonRepository personRepository;
     private final ItemsRepository itemsRepository;
+    private final PersonService personService;
+    private final OfferValidator offerValidator;
+    private final TradeValidators tradeValidators;
 
     public void insertNewOffer(MarketPlaceDto request) {
 
@@ -32,71 +35,58 @@ public class MarketPlaceService {
         Optional<PersonEntity> person = personRepository.findById(request.getIdPerson());
         //.orElseThrow()
 
-        if (person.get().getFaction().equals(FactionEnum.EMPIRE)){
-            throw new BusinessValidationException(" You are not welcome in out MarketPlace (Person is a member from EMPIRE faction)");
-        }
+        offerValidator.factionValidation(person);
 
-        ItemsEntity receive = mapper.toEntity(request.getReceive());
         ItemsEntity offer = mapper.toEntity(request.getOffer());
+        ItemsEntity receive = mapper.toEntity(request.getReceive());
+        offerValidator.itemQuantityValidation(person, offer);
 
-        // entity.food - request.food (Caso for negativo, apitar erro).
-        int personAmmunitions = person.get().getInventory().getItems().getAmmunitions();
-        int personWaters = person.get().getInventory().getItems().getWaters();
-        int personFoods = person.get().getInventory().getItems().getFoods();
-        int personWeapons = person.get().getInventory().getItems().getWeapons();
-
-        if(
-                offer.getAmmunitions() > personAmmunitions ||
-                offer.getWaters() > personWaters ||
-                offer.getFoods() > personFoods ||
-                offer.getWeapons() > personWeapons
-        ){
-           throw new BusinessValidationException("You don't have enough points to do this transaction");
-        }
-
-        //Conferindo que pontos são iguais
-        int pointsReceive = ItemsEnum.getTotalPoints(receive);
-        int pointsOffer = ItemsEnum.getTotalPoints(offer);
-
-        if(pointsReceive > pointsOffer){
-            throw new BusinessValidationException("Your total offer has more points than needed to receive these items");
-        } else if (pointsReceive < pointsOffer){
-            throw new BusinessValidationException("Your total offer has less points than needed to receive these items");
-        }
-
+        int pointsOffer = offerValidator.pointsValidation(receive, offer);
 
         MarketPlaceEntity marketPlaceEntity = new MarketPlaceEntity();
 
         //todo caso não encontre
         BaseEntity base = baseRepository.findById(request.getBase()).get();
 
-        if(base == null){
-            throw new BusinessValidationException("This base does not exists");
-        } else marketPlaceEntity.setBase(base);
+        offerValidator.baseExistsValidation(marketPlaceEntity, base);
 
         marketPlaceEntity.setOfferedBy(person.get());
 
         itemsRepository.save(receive);
         itemsRepository.save(offer);
 
-        //todo remover os itens do inventario !
-        System.out.println(personAmmunitions + "PERSON AMMUNITIONS");
-        System.out.println(offer.getAmmunitions() + "OFFER AMMUNITIONS");
-        System.out.println(personAmmunitions - offer.getAmmunitions());
-        person.get().getInventory().getItems().setAmmunitions(personAmmunitions - offer.getAmmunitions());
-        person.get().getInventory().getItems().setWaters(personWaters - offer.getWaters());
-        person.get().getInventory().getItems().setFoods(personFoods - offer.getFoods());
-        person.get().getInventory().getItems().setWeapons(personWeapons - offer.getWeapons());
+        // removes offered items from rebel's inventory
+        personService.removeItemFromInventory(person.get(), offer);
 
         marketPlaceEntity.setReceive(receive);
         marketPlaceEntity.setOffer(offer);
-
         marketPlaceEntity.setPoints(pointsOffer);
 
-        repository.save(marketPlaceEntity);
+        marketplaceRepository.save(marketPlaceEntity);
     }
 
     public List<MarketPlaceEntity> getListByMarketPlace() {
-        return repository.findAll();
+        return marketplaceRepository.findAll();
+    }
+
+    public void tradeItems(PersonIdDto receiverId, Long offerId) {
+        MarketPlaceEntity marketPlaceEntity = marketplaceRepository.getById(offerId);
+        tradeValidators.offerExistsValidation(marketPlaceEntity);
+
+        PersonEntity offerBy = personRepository.getById(marketPlaceEntity.getOfferedBy().getId());
+        tradeValidators.offerByExists(offerBy);
+
+        PersonEntity receiver = personRepository.getById(receiverId.getId());
+        tradeValidators.receiverExistsValidation(receiver);
+
+        tradeValidators.sameBaseValidation(receiver, offerBy);
+
+        personService.addItemToInventory(receiver, marketPlaceEntity.getOffer());
+        personService.addItemToInventory(offerBy, marketPlaceEntity.getReceive());
+        personService.removeItemFromInventory(receiver, marketPlaceEntity.getReceive());
+
+        personRepository.save(receiver);
+        personRepository.save(offerBy);
+        marketplaceRepository.delete(marketPlaceEntity);
     }
 }
