@@ -2,19 +2,14 @@ package br.com.letscode.stwars.service;
 
 import br.com.letscode.stwars.dto.LocaleRequestDto;
 import br.com.letscode.stwars.dto.PersonRequestDto;
-import br.com.letscode.stwars.dto.ReportRequestDto;
-import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.mapper.PersonMapper;
 import br.com.letscode.stwars.model.*;
-import br.com.letscode.stwars.repository.BaseRepository;
 import br.com.letscode.stwars.repository.PersonRepository;
-import br.com.letscode.stwars.repository.RebellionRepository;
 import br.com.letscode.stwars.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +45,31 @@ public class PersonService {
         return personRepository.findById(id).get();
     }
 
+    // TODO: check return -> PersonEntity
     public InventoryEntity getPersonInventory(Long id){
         return personRepository.findById(id).get().getInventory();
     }
 
+
+    public PersonEntity addItemToInventory(PersonEntity person, ItemsEntity items){
+       return updateInventory(person, items, 1);
+    }
+
+    public PersonEntity removeItemFromInventory(PersonEntity person, ItemsEntity items){
+        return updateInventory(person, items, -1);
+    }
+
+    private PersonEntity updateInventory(PersonEntity person, ItemsEntity items, int operator){
+        int ammo = person.getInventory().getItems().getAmmunitions();
+        int weapons = person.getInventory().getItems().getWeapons();
+        int waters = person.getInventory().getItems().getWaters();
+        int foods = person.getInventory().getItems().getFoods();
+
+        person.getInventory().getItems().setWeapons(weapons + (items.getWeapons() * operator));
+        person.getInventory().getItems().setAmmunitions(ammo + (items.getAmmunitions() * operator));
+        person.getInventory().getItems().setWaters(waters + (items.getWaters() * operator));
+        person.getInventory().getItems().setFoods(foods + (items.getFoods() * operator));
+
+        return person;
+    }
 }
