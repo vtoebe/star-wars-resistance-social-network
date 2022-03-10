@@ -5,6 +5,8 @@ import br.com.letscode.stwars.model.MarketPlaceEntity;
 import br.com.letscode.stwars.model.PersonEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class TradeValidators {
     public void offerExistsValidation(MarketPlaceEntity marketPlaceEntity) {
@@ -28,6 +30,12 @@ public class TradeValidators {
     public void sameBaseValidation(PersonEntity receiver, PersonEntity offerBy) {
         if(offerBy.getLocale().getBase() != receiver.getLocale().getBase()){
             throw new BusinessValidationException("You are not in the same Base! Please go to " + offerBy.getLocale().getBase() + " and try again!");
+        }
+    }
+
+    public void differentRebelsTradingValidation(PersonEntity offerBy, PersonEntity receiver) {
+        if (Objects.equals(offerBy.getName(), receiver.getName())){
+            throw new BusinessValidationException("You can't trade with yourself");
         }
     }
 }
