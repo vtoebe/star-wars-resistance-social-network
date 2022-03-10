@@ -1,5 +1,6 @@
 package br.com.letscode.stwars.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "marketplace")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MarketPlaceEntity {
 
     @Id
