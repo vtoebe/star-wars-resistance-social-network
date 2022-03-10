@@ -13,6 +13,7 @@ import br.com.letscode.stwars.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,7 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final LocaleService localeService;
 
+    @Transactional
     public void insertPerson(PersonRequestDto request) {
         PersonEntity person = personMapper.toEntity(request);
 
@@ -35,6 +37,7 @@ public class PersonService {
         personRepository.save(person);
     }
 
+    @Transactional
     public void updateLocale(LocaleRequestDto request, Long personId) {
         PersonEntity person = personRepository.findById(personId).get(); //todo -> orElseThrow( EntityNotFound )
 
