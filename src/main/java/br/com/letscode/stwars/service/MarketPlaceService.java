@@ -4,6 +4,7 @@ import br.com.letscode.stwars.dto.AcceptOfferDto;
 import br.com.letscode.stwars.dto.MarketPlaceDto;
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.enums.ItemsEnum;
+import br.com.letscode.stwars.enums.MessageCodeEnum;
 import br.com.letscode.stwars.exceptions.BusinessValidationException;
 import br.com.letscode.stwars.mapper.ItemMapper;
 import br.com.letscode.stwars.model.*;
@@ -11,7 +12,6 @@ import br.com.letscode.stwars.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +28,18 @@ public class MarketPlaceService {
 
     public void insertNewOffer(MarketPlaceDto request) {
 
-        // todo - exception
-        Optional<PersonEntity> person = personRepository.findById(request.getIdPerson());
-        //.orElseThrow()
+        // exception
+        Optional<PersonEntity> person = Optional.ofNullable(personRepository.findById(request.getIdPerson()).orElseThrow(
+                () -> new BusinessValidationException(ValidationError.builder()
+                        .keyMessage(MessageCodeEnum.RESOURCE_NOT_FOUND)
+                        .params(List.of(MessageCodeEnum.PERSON_ID_FIELD))
+                        .build())));
 
         if (person.get().getFaction().equals(FactionEnum.EMPIRE)){
-            throw new BusinessValidationException(" You are not welcome in out MarketPlace (Person is a member from EMPIRE faction)");
+            throw new BusinessValidationException(ValidationError.builder()
+                                    .keyMessage(MessageCodeEnum.NOT_ALLOWED)
+                                    .params(List.of(MessageCodeEnum.FACTION_FIELD))
+                                    .build());
         }
 
         ItemsEntity receive = mapper.toEntity(request.getReceive());
@@ -51,7 +57,10 @@ public class MarketPlaceService {
                 offer.getFoods() > personFoods ||
                 offer.getWeapons() > personWeapons
         ){
-           throw new BusinessValidationException("You don't have enough points to do this transaction");
+           throw new BusinessValidationException((ValidationError.builder()
+                   .keyMessage(MessageCodeEnum.NOT_ENOUGH_POINTS)
+                   .params(List.of(MessageCodeEnum.ITEMS_FIELD))
+                   .build()));
         }
 
         //Conferindo que pontos são iguais
@@ -59,9 +68,15 @@ public class MarketPlaceService {
         int pointsOffer = ItemsEnum.getTotalPoints(offer);
 
         if(pointsReceive > pointsOffer){
-            throw new BusinessValidationException("Your total offer has more points than needed to receive these items");
+            throw new BusinessValidationException((ValidationError.builder()
+                    .keyMessage(MessageCodeEnum.MORE_THAN_NEEDED)
+                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
+                    .build()));
         } else if (pointsReceive < pointsOffer){
-            throw new BusinessValidationException("Your total offer has less points than needed to receive these items");
+            throw new BusinessValidationException((ValidationError.builder()
+                    .keyMessage(MessageCodeEnum.LESS_THAN_NEEDED)
+                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
+                    .build()));
         }
 
 
@@ -71,7 +86,10 @@ public class MarketPlaceService {
         BaseEntity base = baseRepository.findById(request.getBase()).get();
 
         if(base == null){
-            throw new BusinessValidationException("This base does not exists");
+            throw new BusinessValidationException(ValidationError.builder()
+                    .keyMessage(MessageCodeEnum.RESOURCE_NOT_FOUND)
+                    .params(List.of(MessageCodeEnum.BASE_FIELD))
+                    .build());
         } else marketPlaceEntity.setBase(base);
 
         marketPlaceEntity.setOfferedBy(person.get());
@@ -108,9 +126,10 @@ public class MarketPlaceService {
         PersonEntity acceptPerson = personRepository.findById(acceptPersonId).get();
 
         if (acceptPerson.getFaction().equals(FactionEnum.EMPIRE)){
-            throw new BusinessValidationException(
-                    " You are not welcome in out MarketPlace (Person is a member from EMPIRE faction)"
-            );
+            throw new BusinessValidationException(ValidationError.builder()
+                    .keyMessage(MessageCodeEnum.NOT_ALLOWED)
+                    .params(List.of(MessageCodeEnum.FACTION_FIELD))
+                    .build());
         }
 
         // entity.food - request.food (Caso for negativo, apitar erro).
@@ -125,12 +144,17 @@ public class MarketPlaceService {
                 marketPlace.getReceive().getFoods() > personFoods ||
                 marketPlace.getReceive().getWeapons() > personWeapons
         ){
-            throw new BusinessValidationException("You don't have enough points to do this transaction");
-        }
+            throw new BusinessValidationException((ValidationError.builder()
+                    .keyMessage(MessageCodeEnum.NOT_ENOUGH_POINTS)
+                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
+                    .build()));        }
 
         //VERIFICANDO SE ESTAO NA MESMA BASE
         if(requestPerson.getLocale().getBase() != acceptPerson.getLocale().getBase()){
-            throw new BusinessValidationException("You are not in the marketPlace offer Base!");
+            throw new BusinessValidationException((ValidationError.builder()
+                    .keyMessage(MessageCodeEnum.NOT_IN_SAME_BASE)
+                    .params(List.of(MessageCodeEnum.BASE_FIELD))
+                    .build()));
         }
 
 

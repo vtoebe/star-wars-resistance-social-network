@@ -2,19 +2,18 @@ package br.com.letscode.stwars.service;
 
 import br.com.letscode.stwars.dto.LocaleRequestDto;
 import br.com.letscode.stwars.dto.PersonRequestDto;
-import br.com.letscode.stwars.dto.ReportRequestDto;
-import br.com.letscode.stwars.enums.FactionEnum;
+import br.com.letscode.stwars.enums.MessageCodeEnum;
+import br.com.letscode.stwars.exceptions.BusinessValidationException;
 import br.com.letscode.stwars.mapper.PersonMapper;
 import br.com.letscode.stwars.model.*;
-import br.com.letscode.stwars.repository.BaseRepository;
 import br.com.letscode.stwars.repository.PersonRepository;
-import br.com.letscode.stwars.repository.RebellionRepository;
+import br.com.letscode.stwars.service.validators.GetPersonServiceValidator;
+import br.com.letscode.stwars.service.validators.InsertPersonServiceValidator;
 import br.com.letscode.stwars.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +22,13 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
     private final LocaleService localeService;
+    private final InsertPersonServiceValidator insertPersonServiceValidator;
 
     public void insertPerson(PersonRequestDto request) {
+        List<ValidationError> validationErrors = insertPersonServiceValidator.validate(request);
+        if (!validationErrors.isEmpty()) {
+            throw new BusinessValidationException(validationErrors);
+        }
         PersonEntity person = personMapper.toEntity(request);
 
         // Config de Relecionamento
@@ -36,7 +40,13 @@ public class PersonService {
     }
 
     public void updateLocale(LocaleRequestDto request, Long personId) {
-        PersonEntity person = personRepository.findById(personId).get(); //todo -> orElseThrow( EntityNotFound )
+        PersonEntity person = personRepository.findById(personId)
+                .orElseThrow(
+                () -> new BusinessValidationException(
+                ValidationError.builder()
+                            .keyMessage(MessageCodeEnum.RESOURCE_NOT_FOUND)
+                            .params(List.of(MessageCodeEnum.PERSON_ID_FIELD))
+                            .build()));
 
         localeService.updateLocale(request, person);
         personRepository.save(person);
@@ -47,11 +57,21 @@ public class PersonService {
     }
 
     public PersonEntity getPersonById(Long id) {
-        return personRepository.findById(id).get();
+        return personRepository.findById(id).orElseThrow(
+                () -> new BusinessValidationException(
+                        ValidationError.builder()
+                                .keyMessage(MessageCodeEnum.RESOURCE_NOT_FOUND)
+                                .params(List.of(MessageCodeEnum.PERSON_ID_FIELD))
+                                .build()));
     }
 
     public InventoryEntity getPersonInventory(Long id){
-        return personRepository.findById(id).get().getInventory();
+        return personRepository.findById(id).orElseThrow(
+                () -> new BusinessValidationException(
+                        ValidationError.builder()
+                                .keyMessage(MessageCodeEnum.RESOURCE_NOT_FOUND)
+                                .params(List.of(MessageCodeEnum.PERSON_ID_FIELD))
+                                .build())).getInventory();
     }
 
 }
