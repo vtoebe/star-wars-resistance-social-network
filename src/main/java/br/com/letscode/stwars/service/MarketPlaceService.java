@@ -29,24 +29,17 @@ public class MarketPlaceService {
     private final TradeValidators tradeValidators;
 
     public void insertNewOffer(MarketPlaceDto request) {
-
-        // todo - exception
-        Optional<PersonEntity> person = personRepository.findById(request.getIdPerson());
-        //.orElseThrow()
+        MarketPlaceEntity marketPlaceEntity = new MarketPlaceEntity();
+        Optional<PersonEntity> person = personRepository.findById(request.getIdPerson());   // todo - exception -> .orElseThrow()
 
         offerValidator.factionValidation(person);
-
         ItemsEntity offer = mapper.toEntity(request.getOffer());
         ItemsEntity receive = mapper.toEntity(request.getReceive());
         offerValidator.itemQuantityValidation(person, offer);
 
         int pointsOffer = offerValidator.pointsValidation(receive, offer);
 
-        MarketPlaceEntity marketPlaceEntity = new MarketPlaceEntity();
-
-        //todo caso não encontre
-        BaseEntity base = baseRepository.findById(request.getBase()).get();
-
+        BaseEntity base = baseRepository.findById(request.getBase()).get(); //todo caso não encontre
         offerValidator.baseExistsValidation(marketPlaceEntity, base);
 
         marketPlaceEntity.setOfferedBy(person.get());
@@ -54,7 +47,6 @@ public class MarketPlaceService {
         itemsRepository.save(receive);
         itemsRepository.save(offer);
 
-        // removes offered items from rebel's inventory
         personService.removeItemFromInventory(person.get(), offer);
 
         marketPlaceEntity.setReceive(receive);
@@ -75,9 +67,12 @@ public class MarketPlaceService {
         PersonEntity offerBy = personRepository.getById(marketPlaceEntity.getOfferedBy().getId());
         tradeValidators.offerByExists(offerBy);
 
-        PersonEntity receiver = personRepository.getById(receiverId.getId());
+        PersonEntity receiver = personService.getPersonById(receiverId.getId());
         tradeValidators.receiverExistsValidation(receiver);
 
+        offerValidator.factionValidation(Optional.of(receiver));
+        offerValidator.itemQuantityValidation(Optional.of(receiver), marketPlaceEntity.getReceive());
+        tradeValidators.differentRebelsTradingValidation(offerBy, receiver);
         tradeValidators.sameBaseValidation(receiver, offerBy);
 
         personService.addItemToInventory(receiver, marketPlaceEntity.getOffer());
@@ -97,25 +92,24 @@ public class MarketPlaceService {
         transactionHistory.setId(id);
         transactionHistory.setReceiverPerson(receiver);
         transactionHistory.setRequesterPerson(tradeOffer.getOfferedBy());
-
-        //personService.getPersonById(1L)
-        transactionHistory.setTransfer(generateTradeLog(tradeOffer));
+        transactionHistory.setTransfer(generateTradeLog(tradeOffer, receiver));
 
         transactionHistoryRepository.save(transactionHistory);
     }
 
-    private String generateTradeLog(MarketPlaceEntity tradeOffer) {
-        return "Offered by: " + tradeOffer.getOfferedBy().getName() +
+    private String generateTradeLog(MarketPlaceEntity tradeOffer, PersonEntity receiver) {
+        return  "Offered by: " + tradeOffer.getOfferedBy().getName() + " / " +
+                "Accepted by: " + receiver.getName() + "  | " +
                 " Offered: " +
-                tradeOffer.getOffer().getWeapons() + "WE " +
-                tradeOffer.getOffer().getAmmunitions() + "AM " +
-                tradeOffer.getOffer().getWaters() + "WA " +
-                tradeOffer.getOffer().getFoods() + "FO " +
+                tradeOffer.getOffer().getWeapons() + " we/" +
+                tradeOffer.getOffer().getAmmunitions() + " am/" +
+                tradeOffer.getOffer().getWaters() + " wa/" +
+                tradeOffer.getOffer().getFoods() + " fo"+ "  | " +
                 "Received: " +
-                tradeOffer.getReceive().getWeapons() + "WE " +
-                tradeOffer.getReceive().getAmmunitions() + "AM " +
-                tradeOffer.getReceive().getWaters() + "WA " +
-                tradeOffer.getReceive().getFoods() + "FO " +
+                tradeOffer.getReceive().getWeapons() + " we/" +
+                tradeOffer.getReceive().getAmmunitions() + " am/" +
+                tradeOffer.getReceive().getWaters() + " wa/" +
+                tradeOffer.getReceive().getFoods() + " fo" + "  | " +
                 "Trade Points: " + tradeOffer.getPoints();
     }
 
