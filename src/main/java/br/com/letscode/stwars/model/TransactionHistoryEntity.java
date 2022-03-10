@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 public class TransactionHistoryEntity {
     @Id
     private Long id;
-    @MapsId
+
     @ManyToOne
     @JoinColumn(name = "requesterPerson")
     private PersonEntity requesterPerson;
-    @MapsId
+
     @ManyToOne
     @JoinColumn(name = "receiverPerson")
     private PersonEntity receiverPerson;
