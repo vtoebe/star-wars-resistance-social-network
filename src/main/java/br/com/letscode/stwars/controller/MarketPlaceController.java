@@ -1,7 +1,7 @@
 package br.com.letscode.stwars.controller;
 
-import br.com.letscode.stwars.dto.AcceptOfferDto;
 import br.com.letscode.stwars.dto.MarketPlaceDto;
+import br.com.letscode.stwars.dto.PersonIdDto;
 import br.com.letscode.stwars.model.MarketPlaceEntity;
 import br.com.letscode.stwars.service.MarketPlaceService;
 import lombok.RequiredArgsConstructor;
@@ -14,21 +14,23 @@ import java.util.List;
 @RequestMapping("/marketplace")
 public class MarketPlaceController {
 
-    private final MarketPlaceService service;
+    private final MarketPlaceService marketplaceService;
 
-    @PostMapping
+    @PostMapping("/create-offer")
     public void insertOffer(@RequestBody MarketPlaceDto requestDto) {
-        service.insertNewOffer(requestDto);
+
+        marketplaceService.insertNewOffer(requestDto);
     }
 
     //todo by filters
-    @GetMapping()
-    public List<MarketPlaceEntity> getListByMarketPlace() {
-        return service.getListByMarketPlace();
+    @GetMapping("/offers")
+    public List<MarketPlaceEntity> getListMarketPlace() {
+
+        return marketplaceService.getListByMarketPlace();
     }
 
-    @PostMapping(value = "{id}")
-    public void acceptOffer(@PathVariable("id") Long id, @RequestBody AcceptOfferDto request){
-        service.acceptOffer(request, id);
+    @PatchMapping("/offers/{offerId}/trade")
+    public void tradeItems(@RequestBody PersonIdDto personId, @PathVariable("offerId") Long offerId){
+        marketplaceService.tradeItems(personId, offerId);
     }
 }

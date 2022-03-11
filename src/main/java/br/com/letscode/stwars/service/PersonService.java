@@ -73,5 +73,25 @@ public class PersonService {
                                 .params(List.of(MessageCodeEnum.PERSON_ID_FIELD))
                                 .build())).getInventory();
     }
+    public PersonEntity addItemToInventory(PersonEntity person, ItemsEntity items){
+        return updateInventory(person, items, 1);
+    }
 
+    public PersonEntity removeItemFromInventory(PersonEntity person, ItemsEntity items){
+        return updateInventory(person, items, -1);
+    }
+
+    private PersonEntity updateInventory(PersonEntity person, ItemsEntity items, int operator){
+        int ammo = person.getInventory().getItems().getAmmunitions();
+        int weapons = person.getInventory().getItems().getWeapons();
+        int waters = person.getInventory().getItems().getWaters();
+        int foods = person.getInventory().getItems().getFoods();
+
+        person.getInventory().getItems().setWeapons(weapons + (items.getWeapons() * operator));
+        person.getInventory().getItems().setAmmunitions(ammo + (items.getAmmunitions() * operator));
+        person.getInventory().getItems().setWaters(waters + (items.getWaters() * operator));
+        person.getInventory().getItems().setFoods(foods + (items.getFoods() * operator));
+
+        return person;
+    }
 }

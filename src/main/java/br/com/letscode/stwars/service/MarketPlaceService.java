@@ -2,6 +2,7 @@ package br.com.letscode.stwars.service;
 
 import br.com.letscode.stwars.dto.AcceptOfferDto;
 import br.com.letscode.stwars.dto.MarketPlaceDto;
+import br.com.letscode.stwars.dto.PersonIdDto;
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.enums.ItemsEnum;
 import br.com.letscode.stwars.enums.MessageCodeEnum;
@@ -24,181 +25,96 @@ public class MarketPlaceService {
     private final MarketPlaceRepository repository;
     private final PersonRepository personRepository;
     private final ItemsRepository itemsRepository;
-    private final AcceptOfferRepository acceptOfferRepository;
+    private final br.com.letscode.stwars.validators.OfferValidator offerValidator;
+    private final br.com.letscode.stwars.validators.TradeValidator tradeValidator;
+    private final TransactionHistoryRepository transactionHistoryRepository;
+    private final MarketPlaceRepository marketplaceRepository;
+    private final PersonService personService;
 
     public void insertNewOffer(MarketPlaceDto request) {
-
-        // exception
-        Optional<PersonEntity> person = Optional.ofNullable(personRepository.findById(request.getIdPerson()).orElseThrow(
-                () -> new BusinessValidationException(ValidationError.builder()
-                        .keyMessage(MessageCodeEnum.RESOURCE_NOT_FOUND)
-                        .params(List.of(MessageCodeEnum.PERSON_ID_FIELD))
-                        .build())));
-
-        if (person.get().getFaction().equals(FactionEnum.EMPIRE)){
-            throw new BusinessValidationException(ValidationError.builder()
-                                    .keyMessage(MessageCodeEnum.NOT_ALLOWED)
-                                    .params(List.of(MessageCodeEnum.FACTION_FIELD))
-                                    .build());
-        }
-
-        ItemsEntity receive = mapper.toEntity(request.getReceive());
-        ItemsEntity offer = mapper.toEntity(request.getOffer());
-
-        // entity.food - request.food (Caso for negativo, apitar erro).
-        int personAmmunitions = person.get().getInventory().getItems().getAmmunitions();
-        int personWaters = person.get().getInventory().getItems().getWaters();
-        int personFoods = person.get().getInventory().getItems().getFoods();
-        int personWeapons = person.get().getInventory().getItems().getWeapons();
-
-        if(
-                offer.getAmmunitions() > personAmmunitions ||
-                offer.getWaters() > personWaters ||
-                offer.getFoods() > personFoods ||
-                offer.getWeapons() > personWeapons
-        ){
-           throw new BusinessValidationException((ValidationError.builder()
-                   .keyMessage(MessageCodeEnum.NOT_ENOUGH_POINTS)
-                   .params(List.of(MessageCodeEnum.ITEMS_FIELD))
-                   .build()));
-        }
-
-        //Conferindo que pontos são iguais
-        int pointsReceive = ItemsEnum.getTotalPoints(receive);
-        int pointsOffer = ItemsEnum.getTotalPoints(offer);
-
-        if(pointsReceive > pointsOffer){
-            throw new BusinessValidationException((ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.MORE_THAN_NEEDED)
-                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
-                    .build()));
-        } else if (pointsReceive < pointsOffer){
-            throw new BusinessValidationException((ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.LESS_THAN_NEEDED)
-                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
-                    .build()));
-        }
-
-
         MarketPlaceEntity marketPlaceEntity = new MarketPlaceEntity();
+        Optional<PersonEntity> person = personRepository.findById(request.getIdPerson());   // todo - exception -> .orElseThrow()
+        offerValidator.factionValidation(person);
+        ItemsEntity offer = mapper.toEntity(request.getOffer());
+        ItemsEntity receive = mapper.toEntity(request.getReceive());
+        offerValidator.itemQuantityValidation(person, offer);
 
-        //todo caso não encontre
+        int pointsOffer = offerValidator.pointsValidation(receive, offer);
+
+
         BaseEntity base = baseRepository.findById(request.getBase()).get();
-
-        if(base == null){
-            throw new BusinessValidationException(ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.RESOURCE_NOT_FOUND)
-                    .params(List.of(MessageCodeEnum.BASE_FIELD))
-                    .build());
-        } else marketPlaceEntity.setBase(base);
+        //todo caso não encontre
+        offerValidator.baseExistsValidation(marketPlaceEntity, base);
 
         marketPlaceEntity.setOfferedBy(person.get());
 
         itemsRepository.save(receive);
         itemsRepository.save(offer);
 
-        //todo remover os itens do inventario !
-        person.get().getInventory().getItems().setAmmunitions(personAmmunitions - offer.getAmmunitions());
-        person.get().getInventory().getItems().setWaters(personWaters - offer.getWaters());
-        person.get().getInventory().getItems().setFoods(personFoods - offer.getFoods());
-        person.get().getInventory().getItems().setWeapons(personWeapons - offer.getWeapons());
+        personService.removeItemFromInventory(person.get(), offer);
 
         marketPlaceEntity.setReceive(receive);
         marketPlaceEntity.setOffer(offer);
-
         marketPlaceEntity.setPoints(pointsOffer);
 
-        repository.save(marketPlaceEntity);
+        marketplaceRepository.save(marketPlaceEntity);
     }
 
-
-    public List<MarketPlaceEntity> getListByMarketPlace() {
-        return repository.findAll();
+     public List<MarketPlaceEntity> getListByMarketPlace() {
+        return marketplaceRepository.findAll();
     }
 
+    public void tradeItems(PersonIdDto receiverId, Long offerId) {
+        MarketPlaceEntity marketPlaceEntity = marketplaceRepository.getById(offerId);
+        tradeValidator.offerExistsValidation(marketPlaceEntity);
 
-    public void acceptOffer(AcceptOfferDto request, Long acceptPersonId){
+        PersonEntity offerBy = personRepository.getById(marketPlaceEntity.getOfferedBy().getId());
+        tradeValidator.offerByExists(offerBy);
 
-        MarketPlaceEntity marketPlace = repository.findById(request.getIdMarketPlace()).get();
+        PersonEntity receiver = personService.getPersonById(receiverId.getId());
+        tradeValidator.receiverExistsValidation(receiver);
 
-        PersonEntity requestPerson = personRepository.findById(request.getAcceptPersonId()).get();
+        offerValidator.factionValidation(Optional.of(receiver));
+        offerValidator.itemQuantityValidation(Optional.of(receiver), marketPlaceEntity.getReceive());
+        tradeValidator.differentRebelsTradingValidation(offerBy, receiver);
+        tradeValidator.sameBaseValidation(receiver, offerBy);
 
-        PersonEntity acceptPerson = personRepository.findById(acceptPersonId).get();
+        personService.addItemToInventory(receiver, marketPlaceEntity.getOffer());
+        personService.addItemToInventory(offerBy, marketPlaceEntity.getReceive());
+        personService.removeItemFromInventory(receiver, marketPlaceEntity.getReceive());
 
-        if (acceptPerson.getFaction().equals(FactionEnum.EMPIRE)){
-            throw new BusinessValidationException(ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.NOT_ALLOWED)
-                    .params(List.of(MessageCodeEnum.FACTION_FIELD))
-                    .build());
-        }
+        saveTransactionToHistory(marketPlaceEntity, offerId, receiver);
 
-        // entity.food - request.food (Caso for negativo, apitar erro).
-        int personAmmunitions = acceptPerson.getInventory().getItems().getAmmunitions();
-        int personWaters = acceptPerson.getInventory().getItems().getWaters();
-        int personFoods = acceptPerson.getInventory().getItems().getFoods();
-        int personWeapons = acceptPerson.getInventory().getItems().getWeapons();
-
-        if(
-                marketPlace.getReceive().getAmmunitions() > personAmmunitions ||
-                marketPlace.getReceive().getWaters() > personWaters ||
-                marketPlace.getReceive().getFoods() > personFoods ||
-                marketPlace.getReceive().getWeapons() > personWeapons
-        ){
-            throw new BusinessValidationException((ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.NOT_ENOUGH_POINTS)
-                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
-                    .build()));        }
-
-        //VERIFICANDO SE ESTAO NA MESMA BASE
-        if(requestPerson.getLocale().getBase() != acceptPerson.getLocale().getBase()){
-            throw new BusinessValidationException((ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.NOT_IN_SAME_BASE)
-                    .params(List.of(MessageCodeEnum.BASE_FIELD))
-                    .build()));
-        }
-
-
-        ItemsEntity receiveItems = marketPlace.getReceive();
-        ItemsEntity offerItems = marketPlace.getOffer();
-
-
-        //UPDATE REQUESTER INVENTORY --> QUEM SOLICITOU A TROCA
-        int requestPersonWeapons = requestPerson.getInventory().getItems().getWeapons();
-        int requestPersonAmmunitions = requestPerson.getInventory().getItems().getAmmunitions();
-        int requestPersonFoods = requestPerson.getInventory().getItems().getFoods();
-        int requestPersonWaters = requestPerson.getInventory().getItems().getWaters();
-
-        int newWeapons = requestPersonWeapons + receiveItems.getWeapons();
-        requestPerson.getInventory().getItems().setWeapons( newWeapons );
-
-        int newAmmunitions = requestPersonAmmunitions + receiveItems.getAmmunitions();
-        requestPerson.getInventory().getItems().setAmmunitions( newAmmunitions );
-
-        int newFoods = requestPersonFoods + receiveItems.getFoods();
-        requestPerson.getInventory().getItems().setFoods( newFoods );
-
-        int newWaters = requestPersonWaters + receiveItems.getWaters();
-        requestPerson.getInventory().getItems().setWaters( newWaters );
-
-
-        //UPDATE ACCEPTED PERSON INVENTORY --> QUEM ACEITOU A TRANSAÇÃO
-        int acceptPersonWeapons = acceptPerson.getInventory().getItems().getWeapons();
-        int acceptPersonAmmunitions = acceptPerson.getInventory().getItems().getAmmunitions();
-        int acceptPersonFoods = acceptPerson.getInventory().getItems().getFoods();
-        int acceptPersonWaters = acceptPerson.getInventory().getItems().getWaters();
-
-
-        acceptPerson.getInventory().getItems().setWeapons(acceptPersonWeapons - receiveItems.getWeapons());
-        acceptPerson.getInventory().getItems().setAmmunitions(acceptPersonAmmunitions - receiveItems.getAmmunitions());
-        acceptPerson.getInventory().getItems().setFoods(acceptPersonFoods - receiveItems.getFoods());
-        acceptPerson.getInventory().getItems().setWaters(acceptPersonWaters  - receiveItems.getWaters());
-
-
-        acceptPerson.getInventory().getItems().setWeapons(acceptPersonWeapons + offerItems.getWeapons());
-        acceptPerson.getInventory().getItems().setAmmunitions(acceptPersonAmmunitions + offerItems.getAmmunitions());
-        acceptPerson.getInventory().getItems().setFoods(acceptPersonFoods + offerItems.getFoods());
-        acceptPerson.getInventory().getItems().setWaters(acceptPersonWaters + offerItems.getWaters());
-
-        repository.delete(marketPlace);
+        personRepository.save(receiver);
+        personRepository.save(offerBy);
+        marketplaceRepository.delete(marketPlaceEntity);
     }
+
+    private void saveTransactionToHistory(MarketPlaceEntity tradeOffer, Long id, PersonEntity receiver){
+        TransactionHistoryEntity transactionHistory = new TransactionHistoryEntity();
+
+        transactionHistory.setId(id);
+        transactionHistory.setReceiverPerson(receiver);
+        transactionHistory.setRequesterPerson(tradeOffer.getOfferedBy());
+        transactionHistory.setTransfer(generateTradeLog(tradeOffer, receiver));
+
+        transactionHistoryRepository.save(transactionHistory);
+    }
+
+    private String generateTradeLog(MarketPlaceEntity tradeOffer, PersonEntity receiver) {
+        return  "Offered by: " + tradeOffer.getOfferedBy().getName() + " / " +
+                "Accepted by: " + receiver.getName() + "  | " +
+                " Offered: " +
+                tradeOffer.getOffer().getWeapons() + " we/" +
+                tradeOffer.getOffer().getAmmunitions() + " am/" +
+                tradeOffer.getOffer().getWaters() + " wa/" +
+                tradeOffer.getOffer().getFoods() + " fo"+ "  | " +
+                "Received: " +
+                tradeOffer.getReceive().getWeapons() + " we/" +
+                tradeOffer.getReceive().getAmmunitions() + " am/" +
+                tradeOffer.getReceive().getWaters() + " wa/" +
+                tradeOffer.getReceive().getFoods() + " fo" + "  | " +
+                "Trade Points: " + tradeOffer.getPoints();
+    }
+
 }

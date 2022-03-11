@@ -21,7 +21,7 @@ import java.util.List;
 public class ReportService {
     private final PersonRepository personRepository;
     private final RebellionRepository rebellionRepository;
-    static final int MAX_REPORT = 3;
+    static final int TRAITOR_VALIDATOR  = 3;
     public void reportPerson(ReportRequestDto request, Long personId) {
         //todo validar se os ids são iguais
         RebellionEntity rebellion = new RebellionEntity();
@@ -44,7 +44,7 @@ public class ReportService {
 
         // todo - Marcação do status de traição no person.
         // todo tranformar em static o número 3
-        if (rebellionRepository.countReport(personReport.getId()) > MAX_REPORT) {
+        if (rebellionRepository.countReport(personReport.getId()) > TRAITOR_VALIDATOR) {
             personReport.setFaction(FactionEnum.EMPIRE);
             personRepository.save(personReport);
         }

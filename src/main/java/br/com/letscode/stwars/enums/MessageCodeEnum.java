@@ -24,6 +24,11 @@ public enum MessageCodeEnum {
     MORE_THAN_NEEDED("Your total offer has more points than needed to receive these items"),
     LESS_THAN_NEEDED("Your total offer has less points than needed to receive these items"),
     NOT_IN_SAME_BASE("You are not in the marketPlace offer Base!"),
-    SAME_ID("You cannot report yourself!");
+    SAME_ID("You cannot trade or report yourself!"),
+    EMPTY("Your offer is empty!"),
+    OFFER_ID_FIELD("Invalid Offer ID"),
+    OFFER_REBEL_ID_FIELD("Invalid Offer's Rebel's ID"),
+    RECEIVER_ID("Invalid receiver ID");
+
     private final String code;
 }
