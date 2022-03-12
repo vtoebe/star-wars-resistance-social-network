@@ -22,7 +22,7 @@ public class MarketPlaceService {
 
     private final ItemMapper mapper;
     private final BaseRepository baseRepository;
-    private final MarketPlaceRepository repository;
+
     private final PersonRepository personRepository;
     private final ItemsRepository itemsRepository;
     private final br.com.letscode.stwars.validators.OfferValidator offerValidator;
