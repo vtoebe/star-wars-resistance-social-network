@@ -49,10 +49,11 @@ public class PersonService {
     }
 
     // TODO: check return -> PersonEntity
+    //NÃO ESTA SENDO UTILIZADO
     public InventoryEntity getPersonInventory(Long id){
         return personRepository.findById(id).get().getInventory();
     }
-
+    //NÃO ESTA SENDO UTILIZADO
 
     public PersonEntity addItemToInventory(PersonEntity person, ItemsEntity items){
        return updateInventory(person, items, 1);
@@ -62,7 +63,7 @@ public class PersonService {
         return updateInventory(person, items, -1);
     }
 
-    private PersonEntity updateInventory(PersonEntity person, ItemsEntity items, int operator){
+    public PersonEntity updateInventory(PersonEntity person, ItemsEntity items, int operator){
         int ammo = person.getInventory().getItems().getAmmunitions();
         int weapons = person.getInventory().getItems().getWeapons();
         int waters = person.getInventory().getItems().getWaters();
