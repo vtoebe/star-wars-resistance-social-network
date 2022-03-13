@@ -1,6 +1,5 @@
 package br.com.letscode.stwars.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;

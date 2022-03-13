@@ -3,7 +3,6 @@ package br.com.letscode.stwars.controller;
 import br.com.letscode.stwars.dto.MarketPlaceDto;
 import br.com.letscode.stwars.dto.PersonIdDto;
 import br.com.letscode.stwars.model.MarketPlaceEntity;
-import br.com.letscode.stwars.model.PersonEntity;
 import br.com.letscode.stwars.service.MarketPlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

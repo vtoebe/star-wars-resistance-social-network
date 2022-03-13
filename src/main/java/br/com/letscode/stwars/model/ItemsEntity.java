@@ -22,4 +22,13 @@ public class ItemsEntity {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public ItemsEntity(Integer weapons, Integer ammunitions, Integer waters, Integer foods) {
+        this.weapons = weapons;
+        this.ammunitions = ammunitions;
+        this.waters = waters;
+        this.foods = foods;
+    }
+
+    public ItemsEntity() {}
 }

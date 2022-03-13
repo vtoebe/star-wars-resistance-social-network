@@ -2,11 +2,7 @@ package br.com.letscode.stwars.controller;
 
 import br.com.letscode.stwars.dto.LocaleRequestDto;
 import br.com.letscode.stwars.dto.PersonRequestDto;
-import br.com.letscode.stwars.dto.PersonResponseDto;
-import br.com.letscode.stwars.dto.ReportRequestDto;
-import br.com.letscode.stwars.model.InventoryEntity;
 import br.com.letscode.stwars.model.PersonEntity;
-import br.com.letscode.stwars.service.LocaleService;
 import br.com.letscode.stwars.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +17,6 @@ public class PersonController {
 
     private final PersonService personService;
 
-    // GetByIdRebel
     @GetMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
     public PersonEntity getPersonById(@PathVariable(value = "id") Long id){
