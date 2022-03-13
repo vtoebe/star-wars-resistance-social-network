@@ -1,6 +1,5 @@
 package br.com.letscode.stwars.utils;
 
-import br.com.letscode.stwars.dto.PersonRequestDto;
 import br.com.letscode.stwars.model.InventoryEntity;
 import br.com.letscode.stwars.model.LocaleEntity;
 import br.com.letscode.stwars.model.PersonEntity;
