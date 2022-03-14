@@ -1,14 +1,13 @@
 package br.com.letscode.stwars.utils;
 
-import br.com.letscode.stwars.dto.PersonRequestDto;
 import br.com.letscode.stwars.model.InventoryEntity;
 import br.com.letscode.stwars.model.LocaleEntity;
 import br.com.letscode.stwars.model.PersonEntity;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@UtilityClass
+@Component
 public class EntityUtils {
 
     public static InventoryEntity getInventory(PersonEntity person) {

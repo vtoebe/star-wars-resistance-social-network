@@ -1,26 +1,28 @@
 package br.com.letscode.stwars.model;
 
-import lombok.Data;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name="hist_transaction")
 public class TransactionHistoryEntity {
     @Id
     private Long id;
-    @MapsId
+
     @ManyToOne
-    @JoinColumn(name = "requester_person")
+    @JoinColumn(name = "requesterPerson")
     private PersonEntity requesterPerson;
-    @MapsId
+
     @ManyToOne
-    @JoinColumn(name = "receiver_person")
+    @JoinColumn(name = "receiverPerson")
     private PersonEntity receiverPerson;
     private String transfer;
-    @UpdateTimestamp
-    private LocalDateTime transferedAt;
+    @CreationTimestamp
+    private LocalDateTime transferAt;
 }

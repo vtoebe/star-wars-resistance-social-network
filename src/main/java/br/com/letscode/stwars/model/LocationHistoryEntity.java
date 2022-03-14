@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Table(name = "hist_localization")
 public class LocationHistoryEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
-    @MapsId
+    @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+
     @ManyToOne
     @JoinColumn(name = "personId")
     private PersonEntity person;

@@ -23,8 +23,10 @@ import java.util.Optional;
 public class ReportService {
     private final PersonRepository personRepository;
     private final RebellionRepository rebellionRepository;
+  
     static final int TRAITOR_VALIDATOR  = 3;
     private final GetPersonServiceValidator getPersonServiceValidator;
+
     public void reportPerson(ReportRequestDto request, Long personId) {
         //todo validar se os ids são iguais
         RebellionEntity rebellion = new RebellionEntity();
@@ -43,14 +45,9 @@ public class ReportService {
         rebellion.setDescription(request.getDescription());
 
         rebellionRepository.save(rebellion);
-
-        // todo - Marcação do status de traição no person.
-        // todo tranformar em static o número 3
-        if (rebellionRepository.countReport(personReported.getId()) > TRAITOR_VALIDATOR) {
-            personReported.setFaction(FactionEnum.EMPIRE);
-            personRepository.save(personReported);
+        if (rebellionRepository.countReport(personReport.getId()) >= TRAITOR_VALIDATOR ) {
+            personReport.setFaction(FactionEnum.EMPIRE);
+            personRepository.save(personReport);
         }
-
-
     }
 }

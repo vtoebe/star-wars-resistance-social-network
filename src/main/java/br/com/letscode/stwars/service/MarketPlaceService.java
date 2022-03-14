@@ -3,13 +3,16 @@ package br.com.letscode.stwars.service;
 import br.com.letscode.stwars.dto.AcceptOfferDto;
 import br.com.letscode.stwars.dto.MarketPlaceDto;
 import br.com.letscode.stwars.dto.PersonIdDto;
-import br.com.letscode.stwars.enums.FactionEnum;
-import br.com.letscode.stwars.enums.ItemsEnum;
-import br.com.letscode.stwars.enums.MessageCodeEnum;
 import br.com.letscode.stwars.exceptions.BusinessValidationException;
 import br.com.letscode.stwars.mapper.ItemMapper;
 import br.com.letscode.stwars.model.*;
-import br.com.letscode.stwars.repository.*;
+import br.com.letscode.stwars.repository.BaseRepository;
+import br.com.letscode.stwars.repository.ItemsRepository;
+import br.com.letscode.stwars.repository.MarketPlaceRepository;
+import br.com.letscode.stwars.repository.PersonRepository;
+import br.com.letscode.stwars.validators.OfferValidator;
+import br.com.letscode.stwars.validators.TradeValidators;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +46,6 @@ public class MarketPlaceService {
 
 
         BaseEntity base = baseRepository.findById(request.getBase()).get();
-        //todo caso não encontre
         offerValidator.baseExistsValidation(marketPlaceEntity, base);
 
         marketPlaceEntity.setOfferedBy(person.get());

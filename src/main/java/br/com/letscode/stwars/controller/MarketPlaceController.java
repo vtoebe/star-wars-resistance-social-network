@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/marketplace")
 public class MarketPlaceController {
 
-    private final MarketPlaceService marketplaceService;
+    private final MarketPlaceService service;
 
     @PostMapping("/create-offer")
     public void insertOffer(@RequestBody MarketPlaceDto requestDto) {
@@ -24,13 +24,12 @@ public class MarketPlaceController {
 
     //todo by filters
     @GetMapping("/offers")
-    public List<MarketPlaceEntity> getListMarketPlace() {
-
-        return marketplaceService.getListByMarketPlace();
+    public List<MarketPlaceEntity> getListByMarketPlace() {
+        return service.getListByMarketPlace();
     }
 
     @PatchMapping("/offers/{offerId}/trade")
     public void tradeItems(@RequestBody PersonIdDto personId, @PathVariable("offerId") Long offerId){
-        marketplaceService.tradeItems(personId, offerId);
+        service.tradeItems(personId, offerId);
     }
 }
