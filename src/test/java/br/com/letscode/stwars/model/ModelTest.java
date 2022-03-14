@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
+import static com.google.code.beanmatchers.BeanMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +24,7 @@ class ModelTest {
     @Test
     void testModel() {
         assertThat(BaseEntity.class, hasValidGettersAndSetters());
+        assertThat(BaseEntity.class, hasValidBeanConstructor());
         assertThat(InventoryEntity.class, hasValidGettersAndSetters());
         assertThat(ItemsEntity.class, hasValidGettersAndSetters());
         assertThat(LocaleEntity.class, hasValidGettersAndSetters());

@@ -24,6 +24,7 @@ public class MarketPlaceController {
     //todo by filters
     @GetMapping("/offers")
     public List<MarketPlaceEntity> getListByMarketPlace() {
+
         return service.getListByMarketPlace();
     }
 

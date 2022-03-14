@@ -1,6 +1,7 @@
 package br.com.letscode.stwars.model;
 
 import br.com.letscode.stwars.enums.FactionEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;

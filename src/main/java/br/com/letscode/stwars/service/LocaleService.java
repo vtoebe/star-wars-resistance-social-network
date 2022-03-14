@@ -35,7 +35,7 @@ public class LocaleService {
         saveToLocationHistory(person, locale);
     }
 
-    private void saveToLocationHistory(PersonEntity person
+    public void saveToLocationHistory(PersonEntity person
             , LocaleEntity locale) {
         LocationHistoryEntity locationHistoryEntity = new LocationHistoryEntity();
         locationHistoryEntity.setPerson(person);

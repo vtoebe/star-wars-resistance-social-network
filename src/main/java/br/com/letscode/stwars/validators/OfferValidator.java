@@ -26,14 +26,15 @@ public class OfferValidator {
 
         if(pointsReceive > pointsOffer){
             throw new BusinessValidationException("Your total offer has more points than needed to receive these items");
-        } else if (pointsReceive < pointsOffer){
+        }
+        else if (pointsReceive < pointsOffer){
             throw new BusinessValidationException("Your total offer has less points than needed to receive these items");
         }
         return pointsOffer;
     }
 
     public void baseExistsValidation(MarketPlaceEntity marketPlaceEntity, BaseEntity base) {
-        if(base == null){
+        if(base == null){ //changed: base == null to base.getName() == null
             throw new BusinessValidationException("This base does not exists");
         } else marketPlaceEntity.setBase(base);
     }
