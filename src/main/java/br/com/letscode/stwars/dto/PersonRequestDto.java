@@ -2,6 +2,7 @@ package br.com.letscode.stwars.dto;
 
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.enums.GenreEnum;
+import br.com.letscode.stwars.model.BaseEntity;
 import lombok.Data;
 
 import java.time.LocalDateTime;

@@ -18,13 +18,13 @@ public class MarketPlaceController {
 
     @PostMapping("/create-offer")
     public void insertOffer(@RequestBody MarketPlaceDto requestDto) {
-        service.insertNewOffer(requestDto);
+
+        marketplaceService.insertNewOffer(requestDto);
     }
 
     //todo by filters
     @GetMapping("/offers")
     public List<MarketPlaceEntity> getListByMarketPlace() {
-
         return service.getListByMarketPlace();
     }
 
