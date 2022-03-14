@@ -2,28 +2,22 @@ package br.com.letscode.stwars.service;
 
 import br.com.letscode.stwars.dto.ReportRequestDto;
 import br.com.letscode.stwars.enums.FactionEnum;
-import br.com.letscode.stwars.enums.MessageCodeEnum;
-import br.com.letscode.stwars.exceptions.BusinessValidationException;
 import br.com.letscode.stwars.model.PersonEntity;
 import br.com.letscode.stwars.model.RebellionEntity;
 import br.com.letscode.stwars.model.RebellionId;
-import br.com.letscode.stwars.model.ValidationError;
 import br.com.letscode.stwars.repository.PersonRepository;
 import br.com.letscode.stwars.repository.RebellionRepository;
 import br.com.letscode.stwars.service.validators.GetPersonServiceValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ReportService {
     private final PersonRepository personRepository;
     private final RebellionRepository rebellionRepository;
-  
+
     static final int TRAITOR_VALIDATOR  = 3;
     private final GetPersonServiceValidator getPersonServiceValidator;
 
@@ -45,9 +39,9 @@ public class ReportService {
         rebellion.setDescription(request.getDescription());
 
         rebellionRepository.save(rebellion);
-        if (rebellionRepository.countReport(personReport.getId()) >= TRAITOR_VALIDATOR ) {
-            personReport.setFaction(FactionEnum.EMPIRE);
-            personRepository.save(personReport);
+        if (rebellionRepository.countReport(personReported.getId()) >= TRAITOR_VALIDATOR ) {
+            personReported.setFaction(FactionEnum.EMPIRE);
+            personRepository.save(personReported);
         }
     }
 }

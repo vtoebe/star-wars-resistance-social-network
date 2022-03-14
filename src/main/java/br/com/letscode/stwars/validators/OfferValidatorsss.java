@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class OfferValidator {
+public class OfferValidatorsss {
     public void factionValidation(Optional<PersonEntity> person) {
         if (person.get().getFaction().equals(FactionEnum.EMPIRE)){
             throw new BusinessValidationException(" You are not welcome in out MarketPlace (Person is a member from EMPIRE faction)");
@@ -28,7 +28,8 @@ public class OfferValidator {
             throw new BusinessValidationException("Your total offer has more points than needed to receive these items");
         }
         else if (pointsReceive < pointsOffer){
-            throw new BusinessValidationException("Your total offer has less points than needed to receive these items");
+            throw new BusinessValidationException(
+                    "Your total offer has less points than needed to receive these items");
         }
         return pointsOffer;
     }

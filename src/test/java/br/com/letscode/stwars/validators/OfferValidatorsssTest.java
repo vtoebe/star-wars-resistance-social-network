@@ -1,26 +1,23 @@
 package br.com.letscode.stwars.validators;
 
 import br.com.letscode.stwars.enums.FactionEnum;
-import br.com.letscode.stwars.enums.ItemsEnum;
 import br.com.letscode.stwars.exceptions.BusinessValidationException;
 import br.com.letscode.stwars.model.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
-class OfferValidatorTest {
+class OfferValidatorsssTest {
 
     @InjectMocks
-    private OfferValidator offerValidator;
+    private OfferValidatorsss offerValidator;
 
     BusinessValidationException businessValidationException = new BusinessValidationException("Error Message");
 

@@ -8,23 +8,22 @@ import br.com.letscode.stwars.model.MarketPlaceEntity;
 import br.com.letscode.stwars.model.PersonEntity;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class TradeValidatorsTest {
+class TradeValidatorsssTest {
 
     @InjectMocks
-    private TradeValidators tradeValidators;
+    private TradeValidatorsss tradeValidatorsss;
 
     BusinessValidationException businessValidationException = new BusinessValidationException("Error Message");
 
     @Test
     void testOfferExistsValidation() {
         BusinessValidationException exception = assertThrows(businessValidationException
-                .getClass(), () -> tradeValidators
+                .getClass(), () -> tradeValidatorsss
                 .offerExistsValidation(getMarketPlaceEntity()));
         assertEquals("Invalid Offer ID", exception.getMessage());
     }
@@ -32,7 +31,7 @@ class TradeValidatorsTest {
     @Test
     void testOfferByExists() {
         BusinessValidationException exception = assertThrows(businessValidationException
-                .getClass(), () -> tradeValidators
+                .getClass(), () -> tradeValidatorsss
                 .offerByExists(getPersonEntity()));
         assertEquals("Invalid Offer's Rebel's ID", exception.getMessage());
     }
@@ -40,7 +39,7 @@ class TradeValidatorsTest {
     @Test
     void testReceiverExistsValidation() {
         BusinessValidationException exception = assertThrows(businessValidationException
-                .getClass(), () -> tradeValidators
+                .getClass(), () -> tradeValidatorsss
                 .receiverExistsValidation(getPersonEntity()));
         assertEquals("Invalid Receiver ID", exception.getMessage());
     }
@@ -48,7 +47,7 @@ class TradeValidatorsTest {
     @Test
     void testSameBaseValidation() {
         BusinessValidationException exception = assertThrows(businessValidationException
-                .getClass(), () -> tradeValidators
+                .getClass(), () -> tradeValidatorsss
                 .sameBaseValidation(getPersonEntityLocal1(), getPersonEntityLocal2()));
         assertEquals("You are not in the same Base! Please go to " + getPersonEntityLocal2().getLocale().getBase() + " and try again!", exception.getMessage());
     }
@@ -56,7 +55,7 @@ class TradeValidatorsTest {
     @Test
     void testDifferentRebelsTradingValidation() {
         BusinessValidationException exception = assertThrows(businessValidationException
-                .getClass(), () -> tradeValidators
+                .getClass(), () -> tradeValidatorsss
                 .differentRebelsTradingValidation(getPersonEntityLocal1(), getPersonEntityLocal1()));
         assertEquals("You can't trade with yourself", exception.getMessage());
     }

@@ -81,14 +81,6 @@ public class PersonService {
         return updateInventory(person, items, -1);
     }
 
-    public PersonEntity addItemToInventory(PersonEntity person, ItemsEntity items){
-       return updateInventory(person, items, 1);
-    }
-
-    public PersonEntity removeItemFromInventory(PersonEntity person, ItemsEntity items){
-        return updateInventory(person, items, -1);
-    }
-
     public PersonEntity updateInventory(PersonEntity person, ItemsEntity items, int operator){
         int ammo = person.getInventory().getItems().getAmmunitions();
         int weapons = person.getInventory().getItems().getWeapons();

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component
-public class TradeValidators {
+public class TradeValidatorsss {
     public void offerExistsValidation(MarketPlaceEntity marketPlaceEntity) {
         if (marketPlaceEntity == null){
             throw new BusinessValidationException("Invalid Offer ID");

@@ -4,15 +4,14 @@ import br.com.letscode.stwars.dto.ItemsDto;
 import br.com.letscode.stwars.dto.MarketPlaceDto;
 import br.com.letscode.stwars.dto.PersonIdDto;
 import br.com.letscode.stwars.enums.FactionEnum;
-import br.com.letscode.stwars.exceptions.BusinessValidationException;
 import br.com.letscode.stwars.mapper.ItemMapper;
 import br.com.letscode.stwars.model.*;
 import br.com.letscode.stwars.repository.BaseRepository;
 import br.com.letscode.stwars.repository.ItemsRepository;
 import br.com.letscode.stwars.repository.MarketPlaceRepository;
 import br.com.letscode.stwars.repository.PersonRepository;
-import br.com.letscode.stwars.validators.OfferValidator;
-import br.com.letscode.stwars.validators.TradeValidators;
+import br.com.letscode.stwars.validators.OfferValidatorsss;
+import br.com.letscode.stwars.validators.TradeValidatorsss;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +43,7 @@ class MarketPlaceServiceTest {
     @Mock
     private ItemsRepository itemsRepository;
     @Mock
-    private OfferValidator offerValidator;
+    private OfferValidatorsss offerValidator;
     @Mock
     private ItemMapper mapper;
     @Mock
@@ -52,7 +51,7 @@ class MarketPlaceServiceTest {
     @Mock
     private MarketPlaceRepository marketPlaceRepository;
     @Mock
-    private TradeValidators tradeValidators;
+    private TradeValidatorsss tradeValidatorsss;
 
     @Mock
     MarketPlaceEntity marketPlaceEntity = new MarketPlaceEntity();
@@ -101,14 +100,14 @@ class MarketPlaceServiceTest {
     @Test
     void testTradeItems() {
         when(marketPlaceRepository.getById(anyLong())).thenReturn(getMarketPlaceEntity());
-        doNothing().when(tradeValidators).offerExistsValidation(getMarketPlaceEntity());
+        doNothing().when(tradeValidatorsss).offerExistsValidation(getMarketPlaceEntity());
 
         when(personRepository.getById(any())).thenReturn(getPersonEntity());
-        doNothing().when(tradeValidators).offerByExists(getPersonEntity());
+        doNothing().when(tradeValidatorsss).offerByExists(getPersonEntity());
 
-        doNothing().when(tradeValidators).receiverExistsValidation(getPersonEntity());
+        doNothing().when(tradeValidatorsss).receiverExistsValidation(getPersonEntity());
 
-        doNothing().when(tradeValidators).sameBaseValidation(getPersonEntity(), getPersonEntity());
+        doNothing().when(tradeValidatorsss).sameBaseValidation(getPersonEntity(), getPersonEntity());
 
         when(personService.addItemToInventory(any(), any())).thenReturn(getPersonEntity());
         when(personService.removeItemFromInventory(any(), any())).thenReturn(getPersonEntity());

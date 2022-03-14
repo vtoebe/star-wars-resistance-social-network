@@ -6,6 +6,7 @@ import br.com.letscode.stwars.mapper.BaseMapper;
 import br.com.letscode.stwars.model.BaseEntity;
 import br.com.letscode.stwars.model.PersonEntity;
 import br.com.letscode.stwars.repository.BaseRepository;
+import br.com.letscode.stwars.service.validators.BaseServiceValidator;
 import org.checkerframework.checker.nullness.Opt;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 class BaseServiceTest {
 
     private BaseService baseService;
+    private BaseServiceValidator baseServiceValidator;
 
     @Mock
     private BaseRepository baseRepository;
@@ -40,7 +42,7 @@ class BaseServiceTest {
 
     @BeforeEach
     void setUp(){
-        baseService = new BaseService(baseRepository, mapper);
+        baseService = new BaseService(baseRepository, mapper, baseServiceValidator);
         baseDto = new BaseDto();
     }
 

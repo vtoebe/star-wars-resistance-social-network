@@ -19,7 +19,7 @@ public class MarketPlaceController {
     @PostMapping("/create-offer")
     public void insertOffer(@RequestBody MarketPlaceDto requestDto) {
 
-        marketplaceService.insertNewOffer(requestDto);
+        service.insertNewOffer(requestDto);
     }
 
     //todo by filters

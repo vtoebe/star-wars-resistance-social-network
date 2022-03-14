@@ -1,18 +1,13 @@
 package br.com.letscode.stwars.service;
 
-import br.com.letscode.stwars.dto.AcceptOfferDto;
 import br.com.letscode.stwars.dto.MarketPlaceDto;
 import br.com.letscode.stwars.dto.PersonIdDto;
-import br.com.letscode.stwars.exceptions.BusinessValidationException;
 import br.com.letscode.stwars.mapper.ItemMapper;
 import br.com.letscode.stwars.model.*;
-import br.com.letscode.stwars.repository.BaseRepository;
-import br.com.letscode.stwars.repository.ItemsRepository;
-import br.com.letscode.stwars.repository.MarketPlaceRepository;
-import br.com.letscode.stwars.repository.PersonRepository;
-import br.com.letscode.stwars.validators.OfferValidator;
-import br.com.letscode.stwars.validators.TradeValidators;
+import br.com.letscode.stwars.repository.*;
 
+import br.com.letscode.stwars.service.validators.OfferValidator;
+import br.com.letscode.stwars.service.validators.TradeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +23,8 @@ public class MarketPlaceService {
 
     private final PersonRepository personRepository;
     private final ItemsRepository itemsRepository;
-    private final br.com.letscode.stwars.validators.OfferValidator offerValidator;
-    private final br.com.letscode.stwars.validators.TradeValidator tradeValidator;
+    private final OfferValidator offerValidator;
+    private final TradeValidator tradeValidator;
     private final TransactionHistoryRepository transactionHistoryRepository;
     private final MarketPlaceRepository marketplaceRepository;
     private final PersonService personService;
