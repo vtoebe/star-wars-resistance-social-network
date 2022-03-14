@@ -26,7 +26,8 @@ public class OfferValidator {
 
         if(pointsReceive > pointsOffer){
             throw new BusinessValidationException("Your total offer has more points than needed to receive these items");
-        } else if (pointsReceive < pointsOffer){
+        }
+        else if (pointsReceive < pointsOffer){
             throw new BusinessValidationException("Your total offer has less points than needed to receive these items");
         }
         return pointsOffer;
