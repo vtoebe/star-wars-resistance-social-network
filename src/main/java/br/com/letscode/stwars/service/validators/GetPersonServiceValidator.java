@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class GetPersonServiceValidator {
     }
     public List<ValidationError> validateSameId(PersonEntity reporterRebel, PersonEntity reportedRebel) {
         List<ValidationError> validationErrors = new ArrayList<>();
-        if(reporterRebel == reportedRebel) {
+        if(Objects.equals(reporterRebel.getId(), reportedRebel.getId())) {
             ValidationError.builder().keyMessage(MessageCodeEnum.SAME_ID).params(List.of(MessageCodeEnum.PERSON_ID_FIELD, reportedRebel,reporterRebel)).build();
         }
 
