@@ -38,11 +38,27 @@ class ReportServiceTest {
         reportService.reportPerson(getReportRequestDto(), 1L);
     }
 
+    @Test
+    void when_personReportBiggerThan3_changeFaction() {
+        when(personRepository.findById(anyLong())).thenReturn(getOptionalPersonEntity());
+        when(rebellionRepository.save(any())).thenReturn(getRebEntity());
+
+        when(rebellionRepository.countReport(anyLong())).thenReturn(4);
+        when(personRepository.save(any())).thenReturn(getPersonEntity());
+        reportService.reportPerson(getReportRequestDto(), 1L);
+    }
+
     private RebellionEntity getRebEntity() {
         RebellionEntity rebellionEntity = new RebellionEntity();
 
         rebellionEntity.setId(getRebId());
         return rebellionEntity;
+    }
+
+    private PersonEntity getPersonEntity() {
+        PersonEntity personEntity = new PersonEntity();
+        personEntity.setId(1L);
+        return personEntity;
     }
 
     private RebellionId getRebId() {

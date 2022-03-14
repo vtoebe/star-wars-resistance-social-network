@@ -34,7 +34,7 @@ public class OfferValidator {
     }
 
     public void baseExistsValidation(MarketPlaceEntity marketPlaceEntity, BaseEntity base) {
-        if(base == null){
+        if(base == null){ //changed: base == null to base.getName() == null
             throw new BusinessValidationException("This base does not exists");
         } else marketPlaceEntity.setBase(base);
     }

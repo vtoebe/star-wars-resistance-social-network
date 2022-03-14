@@ -3,12 +3,10 @@ package br.com.letscode.stwars.validators;
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.enums.ItemsEnum;
 import br.com.letscode.stwars.exceptions.BusinessValidationException;
-import br.com.letscode.stwars.model.BaseEntity;
-import br.com.letscode.stwars.model.InventoryEntity;
-import br.com.letscode.stwars.model.ItemsEntity;
-import br.com.letscode.stwars.model.PersonEntity;
+import br.com.letscode.stwars.model.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
@@ -46,7 +44,7 @@ class OfferValidatorTest {
     @Test
     void testBaseExistsValidation() {
         BusinessValidationException exception = assertThrows(businessValidationException
-                .getClass(), () -> offerValidator.baseExistsValidation(any(), isNull()));
+                .getClass(), () -> offerValidator.baseExistsValidation(getMarketPlaceEntity(), getBaseEntity()));
 
         assertEquals("This base does not exists", exception.getMessage());
     }
@@ -128,6 +126,15 @@ class OfferValidatorTest {
         return itemsSmaller;
     }
 
-    public BaseEntity baseEntity = new BaseEntity();
+    public BaseEntity getBaseEntity() {
+        BaseEntity base = null;
+        return base;
+    }
+
+    public MarketPlaceEntity getMarketPlaceEntity() {
+        MarketPlaceEntity marketPlaceEntity = new MarketPlaceEntity();
+        marketPlaceEntity.setId(1L);
+        return marketPlaceEntity;
+    }
 
 }
