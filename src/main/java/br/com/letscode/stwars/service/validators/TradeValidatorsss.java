@@ -1,4 +1,4 @@
-package br.com.letscode.stwars.validators;
+package br.com.letscode.stwars.service.validators;
 
 import br.com.letscode.stwars.exceptions.BusinessValidationException;
 import br.com.letscode.stwars.model.MarketPlaceEntity;

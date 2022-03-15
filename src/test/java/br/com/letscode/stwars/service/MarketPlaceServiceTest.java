@@ -6,12 +6,9 @@ import br.com.letscode.stwars.dto.PersonIdDto;
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.mapper.ItemMapper;
 import br.com.letscode.stwars.model.*;
-import br.com.letscode.stwars.repository.BaseRepository;
-import br.com.letscode.stwars.repository.ItemsRepository;
-import br.com.letscode.stwars.repository.MarketPlaceRepository;
-import br.com.letscode.stwars.repository.PersonRepository;
-import br.com.letscode.stwars.validators.OfferValidatorsss;
-import br.com.letscode.stwars.validators.TradeValidatorsss;
+import br.com.letscode.stwars.repository.*;
+import br.com.letscode.stwars.service.validators.OfferValidatorsss;
+import br.com.letscode.stwars.service.validators.TradeValidatorsss;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +49,8 @@ class MarketPlaceServiceTest {
     private MarketPlaceRepository marketPlaceRepository;
     @Mock
     private TradeValidatorsss tradeValidatorsss;
+    @Mock
+    private TransactionHistoryRepository transactionHistoryRepository;
 
     @Mock
     MarketPlaceEntity marketPlaceEntity = new MarketPlaceEntity();
@@ -60,7 +59,6 @@ class MarketPlaceServiceTest {
     public static final FactionEnum FACTION = FactionEnum.RESISTANCE;
 
     PersonEntity offer = new PersonEntity();
-    private Object BusinessValidationException;
 
     @BeforeEach
     void setUp() {
@@ -72,11 +70,17 @@ class MarketPlaceServiceTest {
     @Test
     void testInsertNewOffer() {
         when(personRepository.findById(anyLong())).thenReturn(getOptionalPersonEntity());
+
         doNothing().when(offerValidator).factionValidation(getOptionalPersonEntity());
+
         when(mapper.toEntity(Mockito.any())).thenReturn(getItemsEntity());
         doNothing().when(offerValidator).itemQuantityValidation(getOptionalPersonEntity(), getItemsEntity());
+
+        when(offerValidator.pointsValidation(any(), any())).thenReturn(1);
+
         when(baseRepository.findById(Mockito.anyString())).thenReturn(getOptionalBaseEntity());
         doNothing().when(offerValidator).baseExistsValidation(getMarketPlaceEntity(), getBaseEntity());
+
         when(itemsRepository.save(any())).thenReturn(getItemsEntity());
         when(personService.removeItemFromInventory(any(), any())).thenReturn(getPersonEntity());
         when(marketPlaceRepository.save(any())).thenReturn(getMarketPlaceEntity());
@@ -105,12 +109,19 @@ class MarketPlaceServiceTest {
         when(personRepository.getById(any())).thenReturn(getPersonEntity());
         doNothing().when(tradeValidatorsss).offerByExists(getPersonEntity());
 
+        when(personService.getPersonById(anyLong())).thenReturn(getPersonEntity());
         doNothing().when(tradeValidatorsss).receiverExistsValidation(getPersonEntity());
 
+        doNothing().when(offerValidator).factionValidation(getOptionalPersonEntity());
+        doNothing().when(offerValidator).itemQuantityValidation(getOptionalPersonEntity(), getItemsEntity());
+
+        doNothing().when(tradeValidatorsss).differentRebelsTradingValidation(getPersonEntity(), getPersonEntity());
         doNothing().when(tradeValidatorsss).sameBaseValidation(getPersonEntity(), getPersonEntity());
 
         when(personService.addItemToInventory(any(), any())).thenReturn(getPersonEntity());
         when(personService.removeItemFromInventory(any(), any())).thenReturn(getPersonEntity());
+
+        when(transactionHistoryRepository.save(any())).thenReturn(new TransactionHistoryEntity());
 
         when(personRepository.save(any())).thenReturn(getPersonEntity());
         doNothing().when(marketPlaceRepository).delete(any());

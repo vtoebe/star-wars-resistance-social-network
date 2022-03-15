@@ -4,17 +4,14 @@ import br.com.letscode.stwars.dto.BaseDto;
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.mapper.BaseMapper;
 import br.com.letscode.stwars.model.BaseEntity;
-import br.com.letscode.stwars.model.PersonEntity;
+import br.com.letscode.stwars.model.ValidationError;
 import br.com.letscode.stwars.repository.BaseRepository;
 import br.com.letscode.stwars.service.validators.BaseServiceValidator;
-import org.checkerframework.checker.nullness.Opt;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import springfox.documentation.swagger2.mappers.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +19,16 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class BaseServiceTest {
 
     private BaseService baseService;
-    private BaseServiceValidator baseServiceValidator;
 
+    @Mock
+    private BaseServiceValidator baseServiceValidator;
     @Mock
     private BaseRepository baseRepository;
     @Mock
@@ -40,6 +39,8 @@ class BaseServiceTest {
 
     BaseDto baseDto;
 
+    List<ValidationError> listErrors = new ArrayList<>();
+
     @BeforeEach
     void setUp(){
         baseService = new BaseService(baseRepository, mapper, baseServiceValidator);
@@ -48,8 +49,9 @@ class BaseServiceTest {
 
     @Test // // NÃO ESTA SENDO UTILIZADO -> REMOVER??
     void shouldReturn_BaseEntity_getById(){
-        when(baseRepository.findById(Mockito.anyString()))
-                .thenReturn(getOptionalBaseEntity());
+        when(baseServiceValidator.validate(anyString())).thenReturn(listErrors);
+        when(baseRepository.getById(Mockito.anyString()))
+                .thenReturn(getBaseEntity());
 
         BaseEntity response = baseService.getBase(NAME);
         assertNotNull(response);

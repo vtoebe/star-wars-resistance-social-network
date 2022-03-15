@@ -5,9 +5,8 @@ import br.com.letscode.stwars.dto.PersonIdDto;
 import br.com.letscode.stwars.mapper.ItemMapper;
 import br.com.letscode.stwars.model.*;
 import br.com.letscode.stwars.repository.*;
-
-import br.com.letscode.stwars.service.validators.OfferValidator;
-import br.com.letscode.stwars.service.validators.TradeValidator;
+import br.com.letscode.stwars.service.validators.OfferValidatorsss;
+import br.com.letscode.stwars.service.validators.TradeValidatorsss;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +22,8 @@ public class MarketPlaceService {
 
     private final PersonRepository personRepository;
     private final ItemsRepository itemsRepository;
-    private final OfferValidator offerValidator;
-    private final TradeValidator tradeValidator;
+    private final OfferValidatorsss offerValidator;
+    private final TradeValidatorsss tradeValidator;
     private final TransactionHistoryRepository transactionHistoryRepository;
     private final MarketPlaceRepository marketplaceRepository;
     private final PersonService personService;
@@ -32,6 +31,7 @@ public class MarketPlaceService {
     public void insertNewOffer(MarketPlaceDto request) {
         MarketPlaceEntity marketPlaceEntity = new MarketPlaceEntity();
         Optional<PersonEntity> person = personRepository.findById(request.getIdPerson());   // todo - exception -> .orElseThrow()
+
         offerValidator.factionValidation(person);
         ItemsEntity offer = mapper.toEntity(request.getOffer());
         ItemsEntity receive = mapper.toEntity(request.getReceive());
