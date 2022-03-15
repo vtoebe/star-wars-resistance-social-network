@@ -3,11 +3,11 @@ package br.com.letscode.stwars.service;
 import br.com.letscode.stwars.dto.LocaleRequestDto;
 import br.com.letscode.stwars.dto.PersonRequestDto;
 import br.com.letscode.stwars.mapper.PersonMapper;
-import br.com.letscode.stwars.model.InventoryEntity;
-import br.com.letscode.stwars.model.ItemsEntity;
-import br.com.letscode.stwars.model.LocaleEntity;
-import br.com.letscode.stwars.model.PersonEntity;
+import br.com.letscode.stwars.model.*;
 import br.com.letscode.stwars.repository.PersonRepository;
+import br.com.letscode.stwars.service.validators.GetPersonServiceValidator;
+import br.com.letscode.stwars.service.validators.InsertPersonServiceValidator;
+import br.com.letscode.stwars.service.validators.UpdateLocaleValidator;
 import br.com.letscode.stwars.utils.EntityUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,13 +40,22 @@ class PersonServiceTest {
     private PersonMapper mapper;
     @Mock
     private LocaleService localeService;
+    @Mock
+    private InsertPersonServiceValidator insertPersonServiceValidator;
+    @Mock
+    private UpdateLocaleValidator updateLocaleValidator;
+    @Mock
+    private GetPersonServiceValidator getPersonServiceValidator;
 
     @BeforeEach
     void setUp() {
     }
 
+    List<ValidationError> listErrors = new ArrayList<>();
+
     @Test
     void testInsertPerson() {
+        when(insertPersonServiceValidator.validate(any())).thenReturn(listErrors);
         Assertions.assertNotNull(EntityUtils.getInventory(getPersonEntity()));
         when(mapper.toEntity(any())).thenReturn(getPersonEntity());
 
@@ -59,6 +68,8 @@ class PersonServiceTest {
     @Test
     void testUpdateLocale() {
         when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new PersonEntity()));
+
+        when(updateLocaleValidator.validate(any())).thenReturn(listErrors);
 
         doNothing().when(localeService).updateLocale(getLocaleRequestDto(), getPersonEntity());
         when(personRepository.save(any())).thenReturn(getPersonEntity());
@@ -81,6 +92,7 @@ class PersonServiceTest {
     @Test
     void testGetPersonById() {
         when(personRepository.findById(Mockito.anyLong())).thenReturn(getOptionalPersonEntity());
+        when(getPersonServiceValidator.validate(any())).thenReturn(listErrors);
         PersonEntity response = personService.getPersonById(ID);
         assertNotNull(response);
         assertEquals(PersonEntity.class, response.getClass());
@@ -91,6 +103,7 @@ class PersonServiceTest {
     @Test //NÃO ESTA SENDO UTILIZADO
     void testGetPersonInventory() {
         when(personRepository.findById(anyLong())).thenReturn(getOptionalPersonEntity());
+        when(getPersonServiceValidator.validate(any())).thenReturn(listErrors);
 
         InventoryEntity response = personService.getPersonInventory(ID);
         assertNotNull(response);

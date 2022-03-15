@@ -1,4 +1,4 @@
-package br.com.letscode.stwars.validators;
+package br.com.letscode.stwars.service.validators;
 
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.exceptions.BusinessValidationException;

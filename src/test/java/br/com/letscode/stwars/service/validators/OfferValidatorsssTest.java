@@ -1,4 +1,4 @@
-package br.com.letscode.stwars.validators;
+package br.com.letscode.stwars.service.validators;
 
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.exceptions.BusinessValidationException;
@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest

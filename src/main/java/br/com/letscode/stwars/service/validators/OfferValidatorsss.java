@@ -2,22 +2,20 @@ package br.com.letscode.stwars.service.validators;
 
 import br.com.letscode.stwars.enums.FactionEnum;
 import br.com.letscode.stwars.enums.ItemsEnum;
-import br.com.letscode.stwars.enums.MessageCodeEnum;
 import br.com.letscode.stwars.exceptions.BusinessValidationException;
-import br.com.letscode.stwars.model.*;
+import br.com.letscode.stwars.model.BaseEntity;
+import br.com.letscode.stwars.model.ItemsEntity;
+import br.com.letscode.stwars.model.MarketPlaceEntity;
+import br.com.letscode.stwars.model.PersonEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
-public class OfferValidator {
+public class OfferValidatorsss {
     public void factionValidation(Optional<PersonEntity> person) {
         if (person.get().getFaction().equals(FactionEnum.EMPIRE)){
-            throw new BusinessValidationException(ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.NOT_ALLOWED)
-                    .params(List.of(MessageCodeEnum.FACTION_FIELD))
-                    .build());
+            throw new BusinessValidationException(" You are not welcome in out MarketPlace (Person is a member from EMPIRE faction)");
         }
     }
 
@@ -27,25 +25,18 @@ public class OfferValidator {
         int pointsOffer = ItemsEnum.getTotalPoints(offer);
 
         if(pointsReceive > pointsOffer){
-            throw new BusinessValidationException((ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.MORE_THAN_NEEDED)
-                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
-                    .build()));
-        } else if (pointsReceive < pointsOffer){
-            throw new BusinessValidationException((ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.LESS_THAN_NEEDED)
-                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
-                    .build()));
+            throw new BusinessValidationException("Your total offer has more points than needed to receive these items");
+        }
+        else if (pointsReceive < pointsOffer){
+            throw new BusinessValidationException(
+                    "Your total offer has less points than needed to receive these items");
         }
         return pointsOffer;
     }
 
     public void baseExistsValidation(MarketPlaceEntity marketPlaceEntity, BaseEntity base) {
-        if(base == null){
-            throw new BusinessValidationException(ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.RESOURCE_NOT_FOUND)
-                    .params(List.of(MessageCodeEnum.BASE_FIELD))
-                    .build());
+        if(base == null){ //changed: base == null to base.getName() == null
+            throw new BusinessValidationException("This base does not exists");
         } else marketPlaceEntity.setBase(base);
     }
 
@@ -61,10 +52,7 @@ public class OfferValidator {
                         offer.getFoods() > personFoods ||
                         offer.getWeapons() > personWeapons
         ){
-            throw new BusinessValidationException((ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.NOT_ENOUGH_POINTS)
-                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
-                    .build()));
+            throw new BusinessValidationException("You don't have enough points to do this transaction");
         }
 
         if (    offer.getAmmunitions() == 0 &&
@@ -72,10 +60,7 @@ public class OfferValidator {
                 offer.getFoods() == 0 &&
                 offer.getWeapons() == 0
         ){
-            throw new BusinessValidationException((ValidationError.builder()
-                    .keyMessage(MessageCodeEnum.EMPTY)
-                    .params(List.of(MessageCodeEnum.ITEMS_FIELD))
-                    .build()));
+            throw new BusinessValidationException("Your offer is empty!");
         }
     }
 }
