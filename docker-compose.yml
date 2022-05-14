@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  star-wars:
+    image: letscode/stwars-app
+    networks:
+      - rede-aula-docker
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres-aula
+
+  postgres-aula:
+    image: postgres:10.4
+    networks:
+      - rede-aula-docker
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=db
+
+networks:
+  rede-aula-docker:
+    driver: bridge
